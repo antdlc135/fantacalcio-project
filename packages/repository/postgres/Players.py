@@ -1,38 +1,19 @@
+from BaseRepository import BaseRepository
 from models import getModel
-class Players:
+class Players(BaseRepository):
 
   MODEL = "Player"
   DB_TABLE = 'Players'
   # when replicating the class for new models,
   # you should always modify these variables and not the query strings
 
-  response = {}
-
-  def __init__(self,conn,cur):
-    self.conn = conn
-    self.cur = cur
-
   def getAll(self, args):
 
     query = f"SELECT * FROM {Players.DB_TABLE}"
-    # if you want to change the actual query sent to the db,
-    # this is where you should do it
-
-    playerRecords = self.toList(
-      self.cur.execute(
-      f"""SELECT (row_to_json(t)::jsonb) FROM ({query}) t""").fetchall()
-    )
-    # you will generally almost never have to change this expression
-
-    # e.g.
-    # records = [
-    # ({'id': '63c1c6a9-2ddd-4d8d-8264-e4f52b1a7b02', 'roleid': None, 'teamid': None, 'lastname': 'pluto', 'position': None, 'firstname': 'pippo', 'serieaplayer': True},),
-    # ({'id': '5327c9a9-8411-4b85-a9a1-9d16339a77b6', 'roleid': None, 'teamid': None, 'lastname': 'pluto', 'position': None, 'firstname': 'pippo', 'serieaplayer': True},)
-    # ]
-
-    response = getModel({"model": Players.MODEL, "payload": playerRecords})
-    # generally, before exposing the data outside this class, they will always have to be first parsed by a model
-
+    composite_query = f"""SELECT (row_to_json(t)::jsonb) FROM ({query}) t"""
+    result = self.execute_query(composite_query)
+    print("Query result: " + result)
+    response = getModel({"model": Players.MODEL, "payload": result})
     self.response["body"] = response
     return self.response
 
