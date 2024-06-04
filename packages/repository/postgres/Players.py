@@ -1,18 +1,20 @@
 from BaseRepository import BaseRepository
 from models import getModel
 class Players(BaseRepository):
+  def __init__(self,args):
+    super.__init__(args)
 
   MODEL = "Player"
-  DB_TABLE = 'Players'
+  DB_TABLE = "Players"
   # when replicating the class for new models,
   # you should always modify these variables and not the query strings
 
-  def getAll(self, args):
+  def getAll(self):
 
     query = f"SELECT * FROM {Players.DB_TABLE}"
     composite_query = f"""SELECT (row_to_json(t)::jsonb) FROM ({query}) t"""
     result = self.execute_query(composite_query)
-    print("Query result: " + result)
+    print("Query result: " + str(result))
     response = getModel({"model": Players.MODEL, "payload": result})
     self.response["body"] = response
     return self.response

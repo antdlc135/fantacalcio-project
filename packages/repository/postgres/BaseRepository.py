@@ -12,17 +12,10 @@ class BaseRepository:
   response = {}
 
   def __init__(self,args):
-
     self.conn = None
-    self.URL = args.get("POSTGRES_URL")
+    self.URL = os.getenv("POSTGRES_URL")
     self.module_name = args.get("module")
     self.method = args.get("method")
-
-    if self.module_name is None:
-      return {"body": {"data": "Missing module", "error": True}}
-
-    if self.method is None:
-      return {"body": {"data": "Missing method", "error": True}}
 
   def connect(self):
     if not self.conn:
